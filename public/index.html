@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>사다리타기 게임 | 무료 온라인 사다리게임</title>
+  <meta name="description" content="참가자와 결과를 입력하고 무료 사다리타기 게임을 시작하세요. 개별 경로 애니메이션과 전체 결과 확인을 지원합니다.">
+  <link rel="canonical" href="https://ladder.cora1022.com/">
+  <meta property="og:type" content="website"><meta property="og:locale" content="ko_KR">
+  <meta property="og:title" content="사다리게임 | Cora"><meta property="og:description" content="이름과 결과를 입력하고 공정하게 사다리타기를 즐겨보세요.">
+  <meta property="og:url" content="https://ladder.cora1022.com/"><meta property="og:image" content="https://ladder.cora1022.com/og.png"><meta name="twitter:card" content="summary_large_image">
+  <meta name="google-adsense-account" content="ca-pub-6044197403684738">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6044197403684738" crossorigin="anonymous"></script>
+  <link rel="icon" href="/cora-icon.png" type="image/png"><link rel="stylesheet" href="/assets/css/styles.css?v=20260721-1">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cora 사다리게임","url":"https://ladder.cora1022.com/","description":"참가자와 결과를 연결하는 무료 온라인 사다리타기 게임","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"사다리 결과는 어떻게 정해지나요?","acceptedAnswer":{"@type":"Answer","text":"겹치지 않는 가로선을 무작위로 만든 뒤 각 참가자가 세로선을 따라 내려가며 만나는 가로선으로 이동해 결과가 정해집니다."}},{"@type":"Question","name":"몇 명까지 사다리타기를 할 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"2명부터 10명까지 참가할 수 있으며 참가자와 결과 개수는 항상 동일하게 유지됩니다."}},{"@type":"Question","name":"전체 결과를 한 번에 볼 수 있나요?","acceptedAnswer":{"@type":"Answer","text":"네. 전체 결과 보기 버튼을 누르면 모든 참가자와 결과의 연결을 표로 확인할 수 있습니다."}}]}</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 이동</a>
+  <header class="site-header"><div class="header-inner container"><a class="brand" href="https://cora1022.com/" aria-label="Cora 서비스 홈"><img class="brand-mark" src="/cora-icon.png" alt="" width="34" height="34"><strong>Cora</strong></a><nav aria-label="페이지 메뉴"><a href="#how-to">사용 방법</a><a href="#faq">자주 묻는 질문</a></nav></div></header>
+  <main id="main">
+    <section class="hero container"><p class="eyebrow">무료 선택 게임</p><h1>사다리게임</h1><p>참가자와 결과를 입력하고 사다리를 따라 하나씩 확인해 보세요.</p></section>
+    <aside class="ad-slot" data-ad-position="top" hidden aria-label="상단 광고"></aside>
+
+    <section class="game-section container" aria-label="사다리게임 설정과 실행">
+      <div class="setup-panel card">
+        <div class="panel-heading"><div><p class="step">1</p><h2>참가자와 결과 입력</h2></div><button type="button" class="text-button" data-reset data-lockable>전체 초기화</button></div>
+        <label class="count-field">참가자 수<select id="player-count" data-count data-lockable><option value="2">2명</option><option value="3">3명</option><option value="4" selected>4명</option><option value="5">5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option><option value="9">9명</option><option value="10">10명</option></select></label>
+        <div class="entry-head" aria-hidden="true"><span></span><strong>참가자</strong><strong>결과</strong></div>
+        <div class="entry-list" data-fields></div>
+        <p class="error" data-error role="alert" hidden></p>
+        <button class="button button-secondary full-button" type="button" data-generate data-lockable>새 사다리 만들기</button>
+      </div>
+
+      <div class="board-panel card">
+        <div class="panel-heading"><div><p class="step">2</p><h2>경로 확인</h2></div><button class="button button-primary compact-button" type="button" data-reveal-all data-lockable>전체 결과 보기</button></div>
+        <p class="status" data-status aria-live="polite">참가자 이름을 눌러 경로를 확인하세요.</p>
+        <div class="board-scroll">
+          <div class="board-inner" data-board-inner>
+            <div class="endpoint-grid participant-grid" data-participant-buttons role="group" aria-label="참가자 선택"></div>
+            <canvas data-ladder role="img" aria-label="생성된 사다리"></canvas>
+            <div class="endpoint-grid result-grid" data-result-labels role="group" aria-label="도착 결과"></div>
+          </div>
+        </div>
+        <section class="result-panel" data-result-panel hidden aria-labelledby="result-title"><h3 id="result-title" data-result-message>선택 결과</h3><div class="table-scroll"><table><thead><tr><th>참가자</th><th>결과</th></tr></thead><tbody data-result-table-body></tbody></table></div></section>
+      </div>
+    </section>
+
+    <aside class="ad-slot" data-ad-position="middle" hidden aria-label="중간 광고"></aside>
+    <section class="content container" id="how-to">
+      <div class="content-block"><h2>사다리게임 사용 방법</h2><ol><li>참가자 수를 2명에서 10명 사이로 선택합니다.</li><li>각 줄에 참가자 이름과 도착 결과를 입력합니다.</li><li>새 사다리 만들기를 눌러 연결을 다시 섞을 수 있습니다.</li><li>참가자 이름을 눌러 경로를 따라가거나 전체 결과를 한 번에 확인합니다.</li></ol></div>
+      <div class="content-block"><h2>이럴 때 활용해 보세요</h2><div class="tip-grid"><article><h3>순서 정하기</h3><p>발표, 청소, 게임 순서처럼 여럿이 정해야 하는 일을 가볍게 배정합니다.</p></article><article><h3>벌칙과 상품</h3><p>모임의 작은 상품이나 재미있는 벌칙을 참가자와 무작위로 연결합니다.</p></article><article><h3>역할 나누기</h3><p>팀원과 준비할 역할을 같은 개수로 입력해 빠르게 담당을 정합니다.</p></article></div></div>
+      <div class="content-block" id="faq"><h2>자주 묻는 질문</h2><details><summary>사다리 결과는 어떻게 정해지나요?</summary><p>같은 높이에서 겹치지 않는 가로선을 무작위로 만든 뒤, 각 참가자가 세로선을 따라 내려가며 만나는 가로선으로 이동해 결과가 정해집니다.</p></details><details><summary>몇 명까지 참여할 수 있나요?</summary><p>2명부터 10명까지 참여할 수 있습니다. 참가자와 결과 개수는 항상 동일하게 유지됩니다.</p></details><details><summary>같은 참가자가 두 결과에 도착할 수 있나요?</summary><p>아니요. 각 참가자는 서로 다른 하나의 도착 위치에 연결됩니다. 결과 문구 자체는 같은 내용을 여러 번 입력할 수 있습니다.</p></details><details><summary>전체 결과를 한 번에 볼 수 있나요?</summary><p>전체 결과 보기 버튼을 누르면 모든 참가자와 결과의 연결을 표로 확인할 수 있습니다.</p></details></div>
+      <div class="related"><div><p class="eyebrow">다른 게임</p><h2>다른 방식으로 정하고 싶나요?</h2></div><a class="button button-secondary" href="https://spin.cora1022.com/">돌림판 열기</a></div>
+    </section>
+    <aside class="ad-slot" data-ad-position="bottom" hidden aria-label="하단 광고"></aside>
+  </main>
+  <footer class="site-footer"><div class="footer-inner container"><div><strong>Cora 사다리게임</strong><p>여럿의 순서와 결과를 재미있게 연결합니다.</p></div><nav aria-label="사이트 정책"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의</a><a href="https://cora1022.com/">Cora 서비스</a></nav><small>© <span data-year></span> cora1022. All rights reserved.</small></div></footer>
+  <aside class="consent" data-consent hidden aria-label="방문 통계 설정"><p>서비스 개선을 위해 익명 방문 통계를 사용합니다. <a href="/privacy.html">자세히 보기</a></p><div class="consent-actions"><button type="button" data-consent-reject>거부</button><button type="button" data-consent-accept>동의</button></div></aside>
+  <noscript><p class="noscript">사다리게임을 사용하려면 JavaScript를 켜 주세요.</p></noscript>
+  <script type="module" src="/assets/js/app.js?v=20260721-1"></script><script type="module" src="/assets/js/analytics.js?v=20260721-1"></script><script type="module" src="/assets/js/ads.js?v=20260721-1"></script>
+</body>
+</html>

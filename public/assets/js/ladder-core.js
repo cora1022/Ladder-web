@@ -1,5 +1,5 @@
 export const MIN_PLAYERS = 2;
-export const MAX_PLAYERS = 10;
+export const MAX_PLAYERS = 30;
 
 export function secureRandomInt(maxExclusive, cryptoSource = globalThis.crypto) {
   if (!Number.isInteger(maxExclusive) || maxExclusive <= 0) throw new RangeError('최댓값은 양의 정수여야 합니다.');
@@ -18,9 +18,14 @@ export function validatePlayerCount(count) {
   return count;
 }
 
+export function normalizeParticipantNames(names) {
+  if (!Array.isArray(names)) throw new TypeError('참가자 목록이 올바르지 않습니다.');
+  return names.map((name, index) => String(name ?? '').trim() || `참가자 ${index + 1}`);
+}
+
 export function generateLadder(count, options = {}) {
   validatePlayerCount(count);
-  const rowCount = options.rowCount ?? Math.max(10, count * 3);
+  const rowCount = options.rowCount ?? Math.min(60, Math.max(10, count * 3));
   const randomInt = options.randomInt ?? secureRandomInt;
   if (!Number.isInteger(rowCount) || rowCount < 1 || rowCount > 60) throw new RangeError('사다리 줄 수가 올바르지 않습니다.');
 

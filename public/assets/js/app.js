@@ -1,7 +1,6 @@
 import { calculateResults, generateLadder, tracePath, validateLadder } from './ladder-core.js';
 
 const palette = ['#6375f4', '#e06b76', '#28a384', '#e49a3a', '#8b63d9', '#277fb5', '#d56a35', '#56708f', '#bd4f94', '#3c8c55'];
-const countSelect = document.querySelector('[data-count]');
 const fields = document.querySelector('[data-fields]');
 const canvas = document.querySelector('[data-ladder]');
 const participantButtons = document.querySelector('[data-participant-buttons]');
@@ -14,6 +13,8 @@ const status = document.querySelector('[data-status]');
 const generateButton = document.querySelector('[data-generate]');
 const revealAllButton = document.querySelector('[data-reveal-all]');
 const resetButton = document.querySelector('[data-reset]');
+const addButton = document.querySelector('[data-add]');
+const toggleMaskButton = document.querySelector('[data-toggle-mask]');
 const boardInner = document.querySelector('[data-board-inner]');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -24,6 +25,8 @@ let state = {
   rows: [],
   selected: null,
   revealed: new Set(),
+  uncoveredDestinations: new Set(),
+  masked: true,
   animating: false,
 };
 
@@ -32,20 +35,18 @@ function showError(message = '') {
   error.hidden = !message;
 }
 
-function normalizeValues(values, count, prefix) {
-  return Array.from({ length: count }, (_, index) => values[index] ?? `${prefix} ${index + 1}`);
-}
-
 function renderFields() {
   fields.replaceChildren();
   for (let index = 0; index < state.count; index += 1) {
     const row = document.createElement('div');
     row.className = 'entry-row';
-    row.innerHTML = `<span class="entry-number">${index + 1}</span><label><span>참가자</span><input maxlength="30" autocomplete="off" data-lockable data-participant-index="${index}"></label><label><span>결과</span><input maxlength="30" autocomplete="off" data-lockable data-result-index="${index}"></label>`;
+    row.innerHTML = `<span class="entry-number">${index + 1}</span><label><span>참가자</span><input maxlength="30" autocomplete="off" data-lockable data-participant-index="${index}"></label><label><span>결과</span><input maxlength="30" autocomplete="off" data-lockable data-result-index="${index}"></label><button class="remove-entry-button" type="button" data-remove-index="${index}" data-lockable aria-label="${index + 1}번 사다리 삭제">×</button>`;
     row.querySelector('[data-participant-index]').value = state.participants[index];
     row.querySelector('[data-result-index]').value = state.results[index];
     fields.appendChild(row);
   }
+  fields.querySelectorAll('[data-remove-index]').forEach((button) => { button.disabled = state.count <= 2 || state.animating; });
+  addButton.disabled = state.count >= 10 || state.animating;
 }
 
 function readFields() {
@@ -63,6 +64,8 @@ function validateEntries() {
 function setLocked(locked) {
   state.animating = locked;
   document.querySelectorAll('[data-lockable]').forEach((element) => { element.disabled = locked; });
+  addButton.disabled = locked || state.count >= 10;
+  fields.querySelectorAll('[data-remove-index]').forEach((button) => { button.disabled = locked || state.count <= 2; });
   participantButtons.querySelectorAll('button').forEach((button) => { button.disabled = locked; });
 }
 
@@ -86,9 +89,27 @@ function renderEndpoints() {
   state.results.forEach((value, index) => {
     const label = document.createElement('div');
     label.className = 'endpoint result-label';
-    label.textContent = value || `결과 ${index + 1}`;
+    const covered = state.masked && !state.uncoveredDestinations.has(index);
+    label.classList.toggle('is-masked', covered);
+    label.textContent = covered ? '?' : (value || `결과 ${index + 1}`);
+    label.setAttribute('aria-label', covered ? `${index + 1}번 결과 가림막` : (value || `결과 ${index + 1}`));
     resultLabels.appendChild(label);
   });
+  toggleMaskButton.textContent = state.masked ? '가림막 모두 열기' : '결과 다시 가리기';
+  toggleMaskButton.setAttribute('aria-pressed', String(state.masked));
+}
+
+function resetRound({ createRows = true } = {}) {
+  if (createRows) state.rows = generateLadder(state.count);
+  state.selected = null;
+  state.revealed.clear();
+  state.uncoveredDestinations.clear();
+  state.masked = true;
+  resultPanel.hidden = true;
+  resultMessage.textContent = '선택 결과';
+  renderEndpoints();
+  draw();
+  status.textContent = '참가자 이름을 눌러 경로를 확인하세요.';
 }
 
 function getLayout() {
@@ -211,8 +232,10 @@ function revealPath(index) {
   const path = tracePath(index, state.rows, state.count);
   const finish = () => {
     state.revealed.add(index);
+    state.uncoveredDestinations.add(path.end);
     resultMessage.textContent = `${state.participants[index]} → ${state.results[path.end]}`;
     status.textContent = `${state.participants[index]}의 결과를 확인했습니다.`;
+    renderEndpoints();
     renderResultTable();
     setLocked(false);
   };
@@ -234,31 +257,47 @@ function createNewLadder() {
     validateEntries();
     state.rows = generateLadder(state.count);
     validateLadder(state.rows, state.count);
-    state.selected = null;
-    state.revealed.clear();
-    resultPanel.hidden = true;
-    resultMessage.textContent = '';
-    renderEndpoints();
-    draw();
-    status.textContent = '참가자 이름을 눌러 경로를 확인하세요.';
+    resetRound({ createRows: false });
   } catch (caught) { showError(caught.message); }
 }
 
-countSelect.addEventListener('change', () => {
-  if (state.animating) return;
-  readFields();
-  state.count = Number(countSelect.value);
-  state.participants = normalizeValues(state.participants, state.count, '참가자');
-  state.results = normalizeValues(state.results, state.count, '결과');
-  renderFields();
-  createNewLadder();
-});
-
 fields.addEventListener('input', () => {
   readFields();
+  state.selected = null;
+  state.masked = true;
+  state.uncoveredDestinations.clear();
   renderEndpoints();
   resultPanel.hidden = true;
   state.revealed.clear();
+  status.textContent = '입력 내용이 바뀌었습니다. 참가자 이름을 눌러 확인하세요.';
+  draw();
+});
+
+fields.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-remove-index]');
+  if (!button || state.animating) return;
+  if (state.count <= 2) { showError('사다리는 최소 2줄이 필요합니다.'); return; }
+  readFields();
+  const index = Number(button.dataset.removeIndex);
+  state.participants.splice(index, 1);
+  state.results.splice(index, 1);
+  state.count -= 1;
+  renderFields();
+  resetRound();
+  showError();
+});
+
+addButton.addEventListener('click', () => {
+  if (state.animating) return;
+  if (state.count >= 10) { showError('사다리는 최대 10줄까지 추가할 수 있습니다.'); return; }
+  readFields();
+  state.count += 1;
+  state.participants.push('');
+  state.results.push('');
+  renderFields();
+  resetRound();
+  showError();
+  fields.querySelector(`[data-participant-index="${state.count - 1}"]`)?.focus();
 });
 
 participantButtons.addEventListener('click', (event) => {
@@ -273,24 +312,39 @@ revealAllButton.addEventListener('click', () => {
   try { validateEntries(); } catch (caught) { showError(caught.message); return; }
   state.selected = null;
   state.revealed = new Set(Array.from({ length: state.count }, (_, index) => index));
+  state.uncoveredDestinations = new Set(Array.from({ length: state.count }, (_, index) => index));
+  state.masked = false;
   resultMessage.textContent = '전체 결과를 공개했습니다.';
   status.textContent = '전체 결과를 확인했습니다.';
   draw();
+  renderEndpoints();
   renderResultTable();
   resultPanel.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
 });
 
+toggleMaskButton.addEventListener('click', () => {
+  if (state.animating) return;
+  state.masked = !state.masked;
+  if (state.masked) {
+    state.uncoveredDestinations.clear();
+    state.revealed.clear();
+    state.selected = null;
+    resultPanel.hidden = true;
+    draw();
+  } else {
+    state.uncoveredDestinations = new Set(Array.from({ length: state.count }, (_, index) => index));
+  }
+  renderEndpoints();
+  status.textContent = state.masked ? '결과를 다시 가렸습니다.' : '모든 가림막을 열었습니다.';
+});
+
 resetButton.addEventListener('click', () => {
   if (state.animating) return;
-  state = { count: 4, participants: ['', '', '', ''], results: ['', '', '', ''], rows: [], selected: null, revealed: new Set(), animating: false };
-  countSelect.value = '4';
+  state = { count: 4, participants: ['', '', '', ''], results: ['', '', '', ''], rows: [], selected: null, revealed: new Set(), uncoveredDestinations: new Set(), masked: true, animating: false };
   renderFields();
-  state.rows = generateLadder(4);
-  renderEndpoints();
-  resultPanel.hidden = true;
+  resetRound();
   showError();
   status.textContent = '참가자와 결과를 입력해 주세요.';
-  draw();
   fields.querySelector('input')?.focus();
 });
 

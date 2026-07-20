@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { calculateResults, generateLadder, normalizeParticipantNames, secureRandomInt, tracePath, validateLadder } from '../public/assets/js/ladder-core.js';
 
 function sequenceRandom(values) {
@@ -47,4 +48,9 @@ test('안전한 난수는 지정 범위의 정수를 반환한다', () => {
 
 test('빈 참가자 이름에는 순서에 맞는 기본 이름을 부여한다', () => {
   assert.deepEqual(normalizeParticipantNames(['', ' 영희 ', null]), ['참가자 1', '영희', '참가자 3']);
+});
+
+test('화면 모듈은 사다리 핵심 모듈을 버전이 붙은 주소로 불러온다', async () => {
+  const source = await readFile(new URL('../public/assets/js/app.js', import.meta.url), 'utf8');
+  assert.match(source, /from '\.\/ladder-core\.js\?v=[\d-]+'/);
 });

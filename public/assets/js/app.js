@@ -1,4 +1,4 @@
-import { MAX_PLAYERS, calculateResults, generateLadder, normalizeParticipantNames, tracePath, validateLadder } from './ladder-core.js';
+import { MAX_PLAYERS, calculateResults, generateLadder, normalizeParticipantNames, tracePath, validateLadder } from './ladder-core.js?v=20260721-4';
 
 const palette = ['#6375f4', '#e06b76', '#28a384', '#e49a3a', '#8b63d9', '#277fb5', '#d56a35', '#56708f', '#bd4f94', '#3c8c55'];
 const fields = document.querySelector('[data-fields]');

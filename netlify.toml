@@ -15,6 +15,11 @@
   [headers.values]
     Cache-Control = "public, max-age=604800"
 
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 [[redirects]]
   from = "https://ladder-cora1022.netlify.app/*"
   to = "https://ladder.cora1022.com/:splat"
